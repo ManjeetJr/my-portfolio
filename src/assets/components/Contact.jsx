@@ -39,7 +39,6 @@ const LINKS = [
   },
 ];
 
-// Floating rune particles
 const RUNES  = ["ᚱ","ᚷ","ᚦ","ᚹ","ᚠ","ᚢ","ᚨ","ᚺ","ᛁ","ᛃ"];
 const SPARKS = Array.from({ length: 18 }, (_, i) => ({
   id: i,
@@ -51,7 +50,7 @@ const SPARKS = Array.from({ length: 18 }, (_, i) => ({
   size:  Math.random() * 10 + 10,
 }));
 
-function useInView(threshold = 0.15) {
+function useInView(threshold = 0.1) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -88,7 +87,6 @@ function ContactCard({ link, index, inView }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Glow layer on hover */}
       <div style={{
         ...styles.cardGlow,
         background: link.colorFade + "0.06)",
@@ -115,7 +113,13 @@ function ContactCard({ link, index, inView }) {
         <span style={styles.cardDesc}>{link.desc}</span>
       </div>
 
-      <span style={{ ...styles.cardArrow, color: link.color, opacity: hovered ? 1 : 0.3, transform: hovered ? "translateX(4px)" : "translateX(0)", transition: "all 0.25s ease" }}>
+      <span style={{
+        ...styles.cardArrow,
+        color: link.color,
+        opacity: hovered ? 1 : 0.3,
+        transform: hovered ? "translateX(4px)" : "translateX(0)",
+        transition: "all 0.25s ease",
+      }}>
         →
       </span>
     </a>
@@ -123,20 +127,21 @@ function ContactCard({ link, index, inView }) {
 }
 
 export default function Contact() {
-  const [sectionRef, inView] = useInView(0.1);
+  const [sectionRef, inView] = useInView(0.08);
 
   return (
     <section id="contact" style={styles.section} ref={sectionRef}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
         @keyframes shimmer {
           0%   { background-position: -200% center; }
           100% { background-position:  200% center; }
         }
         @keyframes floatRune {
-          0%,100% { transform: translateY(0) rotate(0deg);   opacity: 0.04; }
+          0%,100% { transform: translateY(0) rotate(0deg);     opacity: 0.04; }
           33%      { transform: translateY(-22px) rotate(8deg); opacity: 0.07; }
-          66%      { transform: translateY(-10px) rotate(-5deg); opacity: 0.05; }
+          66%      { transform: translateY(-10px) rotate(-5deg);opacity: 0.05; }
         }
         @keyframes orbPulse {
           0%,100% { transform: scale(1);    opacity: 0.06; }
@@ -146,18 +151,99 @@ export default function Contact() {
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
         }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(28px); }
-          to   { opacity: 1; transform: translateY(0); }
+
+        /* ── CONTACT LAYOUT ── */
+        .contact-layout {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 32px;
+          flex-wrap: wrap;
+        }
+        .contact-card-col {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          flex: 1;
+          min-width: 240px;
+          max-width: 300px;
+        }
+        .contact-sigil {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          position: relative;
+          width: 200px;
+          flex-shrink: 0;
+        }
+        .contact-avail-banner {
+          margin-top: 50px;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: clamp(14px, 3vw, 18px) clamp(14px, 4vw, 28px);
+          border: 1px solid rgba(212,175,55,0.2);
+          border-left: 3px solid rgba(212,175,55,0.6);
+          border-radius: 4px;
+          background: rgba(212,175,55,0.03);
+        }
+
+        /* ── TABLET ── */
+        @media (max-width: 900px) {
+          .contact-layout {
+            gap: 24px;
+          }
+          .contact-card-col {
+            min-width: 200px;
+            max-width: 260px;
+          }
+          .contact-sigil {
+            width: 160px;
+          }
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 700px) {
+          .contact-layout {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 20px;
+          }
+          .contact-card-col {
+            max-width: 100%;
+            min-width: unset;
+            width: 100%;
+          }
+          .contact-sigil {
+            width: 100%;
+            align-items: center;
+            padding: 20px 0;
+            order: -1; /* sigil goes to top on mobile */
+          }
+          .contact-avail-banner {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 30px;
+          }
+        }
+
+        /* ── SMALL MOBILE ── */
+        @media (max-width: 400px) {
+          .contact-avail-banner { padding: 14px; }
         }
       `}</style>
 
       {/* Floating runes */}
       {SPARKS.map((s) => (
         <span key={s.id} style={{
-          position: "absolute", left: `${s.x}%`, top: `${s.y}%`,
-          fontSize: `${s.size}px`, color: "rgba(212,175,55,1)",
-          fontFamily: "serif", userSelect: "none", pointerEvents: "none",
+          position: "absolute",
+          left: `${s.x}%`, top: `${s.y}%`,
+          fontSize: `${s.size}px`,
+          color: "rgba(212,175,55,1)",
+          fontFamily: "serif",
+          userSelect: "none", pointerEvents: "none",
           animation: `floatRune ${s.dur}s ease-in-out ${s.delay}s infinite`,
         }}>
           {s.rune}
@@ -165,7 +251,7 @@ export default function Contact() {
       ))}
 
       {/* Ambient orbs */}
-      <div style={{ ...styles.orb, top: "15%", left: "10%",  width: "400px", height: "400px", background: "radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)", animation: "orbPulse 6s ease-in-out infinite" }} />
+      <div style={{ ...styles.orb, top: "15%", left: "10%", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)", animation: "orbPulse 6s ease-in-out infinite" }} />
       <div style={{ ...styles.orb, bottom: "10%", right: "10%", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(176,122,255,0.05) 0%, transparent 70%)", animation: "orbPulse 8s ease-in-out 2s infinite" }} />
 
       <div style={styles.inner}>
@@ -197,19 +283,18 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Central sigil + cards layout */}
-        <div style={styles.layout}>
+        {/* Cards + Sigil layout */}
+        <div className="contact-layout">
 
           {/* Left cards */}
-          <div style={styles.cardCol}>
+          <div className="contact-card-col">
             {LINKS.slice(0, 2).map((link, i) => (
               <ContactCard key={link.label} link={link} index={i} inView={inView} />
             ))}
           </div>
 
           {/* Center sigil */}
-          <div style={styles.sigil}>
-            {/* Rotating ring */}
+          <div className="contact-sigil">
             <div style={styles.sigilRingOuter}>
               <div style={styles.sigilRingInner} />
             </div>
@@ -223,7 +308,7 @@ export default function Contact() {
           </div>
 
           {/* Right cards */}
-          <div style={styles.cardCol}>
+          <div className="contact-card-col">
             {LINKS.slice(2).map((link, i) => (
               <ContactCard key={link.label} link={link} index={i + 2} inView={inView} />
             ))}
@@ -231,12 +316,14 @@ export default function Contact() {
         </div>
 
         {/* Availability banner */}
-        <div style={{
-          ...styles.availBanner,
-          opacity:   inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(20px)",
-          transition: "all 0.7s ease 0.5s",
-        }}>
+        <div
+          className="contact-avail-banner"
+          style={{
+            opacity:   inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(20px)",
+            transition: "all 0.7s ease 0.5s",
+          }}
+        >
           <span style={styles.availDot} />
           <p style={styles.availText}>
             <span style={styles.availHighlight}>Currently available</span>
@@ -257,7 +344,7 @@ const styles = {
   section: {
     minHeight: "100vh",
     background: "linear-gradient(160deg, #0a0705 0%, #0d0a14 60%, #0a0705 100%)",
-    padding: "100px 40px",
+    padding: "clamp(60px, 10vw, 100px) clamp(16px, 5vw, 40px)",
     position: "relative",
     overflow: "hidden",
     fontFamily: "'Cinzel', serif",
@@ -267,19 +354,16 @@ const styles = {
   orb: { position: "absolute", borderRadius: "50%", pointerEvents: "none" },
   inner: { maxWidth: "1100px", margin: "0 auto", width: "100%", position: "relative", zIndex: 1 },
 
-  header:      { textAlign: "center", marginBottom: "60px" },
-  divider:     { display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", margin: "10px 0" },
-  dividerLine: { width: "80px", height: "1px", background: `linear-gradient(90deg, transparent, ${GOLDF}0.4), transparent)` },
-  dividerGlyph:{ color: GOLDF + "0.6)", fontSize: "14px" },
-  sectionLabel:{ fontSize: "11px", letterSpacing: "5px", color: GOLDF + "0.5)", margin: "0 0 10px", textTransform: "uppercase" },
-  sectionTitle:{ fontFamily: "'Cinzel Decorative', cursive", fontSize: "clamp(28px,4vw,48px)", color: "#e8d5a3", margin: "0 0 14px", letterSpacing: "2px" },
-  titleAccent: { background: `linear-gradient(135deg, ${GOLD}, #f5e17a, #a87c2a, ${GOLD})`, backgroundSize: "300% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", animation: "shimmer 4s linear infinite" },
-  sectionSub:  { fontFamily: "'Lato', sans-serif", fontWeight: 300, fontSize: "15px", color: GOLDF + "0.55)", margin: 0, maxWidth: "560px", marginInline: "auto", lineHeight: 1.8 },
+  header:       { textAlign: "center", marginBottom: "clamp(30px, 5vw, 60px)" },
+  divider:      { display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", margin: "10px 0" },
+  dividerLine:  { width: "80px", height: "1px", background: `linear-gradient(90deg, transparent, ${GOLDF}0.4), transparent)` },
+  dividerGlyph: { color: GOLDF + "0.6)", fontSize: "14px" },
+  sectionLabel: { fontSize: "11px", letterSpacing: "5px", color: GOLDF + "0.5)", margin: "0 0 10px", textTransform: "uppercase" },
+  sectionTitle: { fontFamily: "'Cinzel Decorative', cursive", fontSize: "clamp(24px, 4vw, 48px)", color: "#e8d5a3", margin: "0 0 14px", letterSpacing: "2px" },
+  titleAccent:  { background: `linear-gradient(135deg, ${GOLD}, #f5e17a, #a87c2a, ${GOLD})`, backgroundSize: "300% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", animation: "shimmer 4s linear infinite" },
+  sectionSub:   { fontFamily: "'Lato', sans-serif", fontWeight: 300, fontSize: "clamp(13px, 1.8vw, 15px)", color: GOLDF + "0.55)", margin: "0 auto", maxWidth: "560px", lineHeight: 1.8 },
 
-  layout: { display: "flex", alignItems: "center", justifyContent: "center", gap: "32px", flexWrap: "wrap" },
-
-  cardCol: { display: "flex", flexDirection: "column", gap: "16px", flex: 1, minWidth: "240px", maxWidth: "300px" },
-
+  /* Card */
   card: {
     display: "flex", alignItems: "center", gap: "16px",
     padding: "18px 20px",
@@ -289,20 +373,17 @@ const styles = {
     position: "relative", overflow: "hidden",
     cursor: "pointer",
   },
-  cardPrimary: {
-    background: `linear-gradient(135deg, rgba(212,175,55,0.08), rgba(168,124,42,0.05))`,
-  },
-  cardGlow: { position: "absolute", inset: 0, borderRadius: "6px", pointerEvents: "none" },
+  cardPrimary:   { background: `linear-gradient(135deg, rgba(212,175,55,0.08), rgba(168,124,42,0.05))` },
+  cardGlow:      { position: "absolute", inset: 0, borderRadius: "6px", pointerEvents: "none" },
   cardIconWrap:  { flexShrink: 0 },
   cardIconCircle:{ width: "46px", height: "46px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" },
   cardIcon:      { fontSize: "20px" },
-  cardBody:      { flex: 1, display: "flex", flexDirection: "column", gap: "3px" },
-  cardLabel:     { fontFamily: "'Cinzel', serif", fontSize: "13px", letterSpacing: "1.5px", transition: "color 0.25s ease" },
+  cardBody:      { flex: 1, display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 },
+  cardLabel:     { fontFamily: "'Cinzel', serif", fontSize: "clamp(11px, 2.5vw, 13px)", letterSpacing: "1.5px", transition: "color 0.25s ease" },
   cardDesc:      { fontFamily: "'Lato', sans-serif", fontSize: "11px", color: "rgba(220,200,160,0.4)", letterSpacing: "1px" },
   cardArrow:     { fontSize: "18px", flexShrink: 0 },
 
   /* Sigil */
-  sigil: { display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", position: "relative", width: "200px", flexShrink: 0 },
   sigilRingOuter: {
     position: "absolute", width: "180px", height: "180px", borderRadius: "50%",
     border: `1px dashed ${GOLDF}0.2)`,
@@ -322,19 +403,10 @@ const styles = {
   },
   sigilGlyph: { fontSize: "36px", filter: `drop-shadow(0 0 12px ${GOLDF}0.5))`, marginBottom: "4px" },
   sigilText:  { fontFamily: "'Cinzel', serif", fontSize: "9px", letterSpacing: "4px", color: GOLDF + "0.5)", margin: 0 },
-  sigilName:  { fontFamily: "'Cinzel Decorative', cursive", fontSize: "13px", color: "#e8d5a3", margin: "8px 0 0", textAlign: "center", zIndex: 1 },
+  sigilName:  { fontFamily: "'Cinzel Decorative', cursive", fontSize: "clamp(11px, 2.5vw, 13px)", color: "#e8d5a3", margin: "8px 0 0", textAlign: "center", zIndex: 1 },
   sigilRole:  { fontFamily: "'Lato', sans-serif", fontSize: "10px", color: GOLDF + "0.4)", margin: 0, letterSpacing: "1px", textAlign: "center", zIndex: 1 },
 
-  /* Availability banner */
-  availBanner: {
-    marginTop: "50px",
-    display: "flex", alignItems: "center", gap: "14px",
-    padding: "18px 28px",
-    border: `1px solid ${GOLDF}0.2)`,
-    borderLeft: `3px solid ${GOLDF}0.6)`,
-    borderRadius: "4px",
-    background: GOLDF + "0.03)",
-  },
+  /* Availability */
   availDot: {
     width: "10px", height: "10px", borderRadius: "50%",
     background: "#6ddc8a",
@@ -342,7 +414,7 @@ const styles = {
     flexShrink: 0,
     animation: "orbPulse 2s ease-in-out infinite",
   },
-  availText:      { fontFamily: "'Lato', sans-serif", fontWeight: 300, fontSize: "14px", color: "rgba(220,200,160,0.65)", margin: 0, lineHeight: 1.6, flex: 1 },
+  availText:      { fontFamily: "'Lato', sans-serif", fontWeight: 300, fontSize: "clamp(12px, 1.8vw, 14px)", color: "rgba(220,200,160,0.65)", margin: 0, lineHeight: 1.6, flex: 1 },
   availHighlight: { color: "#6ddc8a", fontWeight: 700 },
   availRune:      { fontSize: "20px", color: GOLDF + "0.4)", flexShrink: 0, filter: "sepia(1) saturate(3) hue-rotate(10deg)" },
 };

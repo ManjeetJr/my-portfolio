@@ -20,9 +20,9 @@ const TITLES = [
 
 export default function Hero() {
   const [titleIndex, setTitleIndex] = useState(0);
-  const [displayed, setDisplayed] = useState("");
-  const [deleting, setDeleting] = useState(false);
-  const [charIndex, setCharIndex] = useState(0);
+  const [displayed, setDisplayed]   = useState("");
+  const [deleting, setDeleting]     = useState(false);
+  const [charIndex, setCharIndex]   = useState(0);
   const canvasRef = useRef(null);
 
   // Typewriter effect
@@ -57,14 +57,13 @@ export default function Hero() {
     let angle = 0;
 
     const draw = () => {
-      canvas.width = canvas.offsetWidth;
+      canvas.width  = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
-      const r = Math.min(cx, cy) * 0.82;
+      const r  = Math.min(cx, cy) * 0.82;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Outer rotating ring
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(angle);
@@ -74,7 +73,6 @@ export default function Hero() {
       ctx.beginPath();
       ctx.arc(0, 0, r, 0, Math.PI * 2);
       ctx.stroke();
-      // Rune marks on ring
       for (let i = 0; i < 12; i++) {
         const a = (i / 12) * Math.PI * 2;
         const x = Math.cos(a) * r;
@@ -94,7 +92,6 @@ export default function Hero() {
       }
       ctx.restore();
 
-      // Inner counter-rotating ring
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(-angle * 0.6);
@@ -106,7 +103,6 @@ export default function Hero() {
       ctx.stroke();
       ctx.restore();
 
-      // Center glow
       const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 0.45);
       grad.addColorStop(0, "rgba(212,175,55,0.07)");
       grad.addColorStop(1, "rgba(0,0,0,0)");
@@ -124,6 +120,144 @@ export default function Hero() {
 
   return (
     <section id="hero" style={styles.section}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Lato:wght@300;400&display=swap');
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
+          50%       { transform: translateY(-20px) scale(1.3); opacity: 1; }
+        }
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0; }
+        }
+        @keyframes shimmer {
+          0%   { background-position: -200% center; }
+          100% { background-position:  200% center; }
+        }
+        @keyframes pulse-ring {
+          0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.3), 0 0 60px rgba(212,175,55,0.1); }
+          50%       { box-shadow: 0 0 40px rgba(212,175,55,0.6), 0 0 100px rgba(212,175,55,0.2); }
+        }
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── HERO LAYOUT ── */
+        .hero-container {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 60px;
+          max-width: 1200px;
+          margin: 0 auto;
+          width: 100%;
+          position: relative;
+          z-index: 2;
+          animation: fadeSlideUp 0.8s ease forwards;
+        }
+        .hero-text-side {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .hero-canvas-side {
+          width: 380px;
+          height: 380px;
+          position: relative;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+        }
+        .hero-stat-row {
+          display: flex;
+          gap: 30px;
+          flex-wrap: wrap;
+        }
+        .hero-buttons {
+          display: flex;
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+        .hero-btn-primary {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 13px 28px;
+          background: linear-gradient(135deg, #d4af37, #a87c2a);
+          color: #0a0705;
+          font-family: 'Cinzel', serif;
+          font-size: 13px;
+          font-weight: 600;
+          letter-spacing: 2px;
+          text-decoration: none;
+          text-transform: uppercase;
+          border-radius: 3px;
+          box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+          transition: all 0.3s ease;
+          white-space: nowrap;
+        }
+        .hero-btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 28px rgba(212,175,55,0.45);
+        }
+        .hero-btn-outline {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 24px;
+          border: 1px solid rgba(212,175,55,0.5);
+          color: rgba(212,175,55,0.85);
+          font-family: 'Cinzel', serif;
+          font-size: 12px;
+          letter-spacing: 2px;
+          text-decoration: none;
+          text-transform: uppercase;
+          border-radius: 3px;
+          background: rgba(212,175,55,0.04);
+          transition: all 0.3s ease;
+          white-space: nowrap;
+        }
+        .hero-btn-outline:hover {
+          background: rgba(212,175,55,0.1);
+          border-color: rgba(212,175,55,0.8);
+        }
+
+        /* ── TABLET (≤ 1024px) ── */
+        @media (max-width: 1024px) {
+          .hero-container    { gap: 40px; }
+          .hero-canvas-side  { width: 300px; height: 300px; }
+        }
+
+        /* ── MOBILE (≤ 768px) ── */
+        @media (max-width: 768px) {
+          .hero-container {
+            flex-direction: column-reverse;  /* avatar on top, text below */
+            gap: 24px;
+            text-align: center;
+          }
+          .hero-text-side  { align-items: center; gap: 16px; }
+          .hero-canvas-side { width: 260px; height: 260px; }
+          .hero-stat-row   { justify-content: center; gap: 16px; }
+          .hero-buttons    { justify-content: center; }
+          .hero-tagline    { text-align: center !important; border-left: none !important; padding-left: 0 !important; border-top: 2px solid rgba(212,175,55,0.3); padding-top: 14px !important; }
+          .hero-title-row  { justify-content: center; }
+        }
+
+        /* ── SMALL MOBILE (≤ 480px) ── */
+        @media (max-width: 480px) {
+          .hero-canvas-side  { width: 220px; height: 220px; }
+          .hero-btn-primary,
+          .hero-btn-outline  { width: 100%; justify-content: center; padding: 14px 20px; }
+          .hero-buttons      { flex-direction: column; width: 100%; max-width: 300px; }
+          .hero-stat-row     { gap: 10px; }
+        }
+      `}</style>
+
       {/* Parchment texture overlay */}
       <div style={styles.parchmentOverlay} />
 
@@ -152,9 +286,9 @@ export default function Hero() {
         <div style={styles.borderLine} />
       </div>
 
-      <div style={styles.container}>
+      <div className="hero-container">
         {/* Left: Text content */}
-        <div style={styles.textSide}>
+        <div className="hero-text-side">
           <p style={styles.classLabel}>
             <span style={styles.classBracket}>[ </span>
             HERO CLASS
@@ -167,7 +301,7 @@ export default function Hero() {
             <span style={styles.nameAccent}>Dhiman</span>
           </h1>
 
-          <div style={styles.titleRow}>
+          <div className="hero-title-row" style={styles.titleRow}>
             <span style={styles.titleGlyph}>⚔</span>
             <span style={styles.typewriter}>
               {displayed}
@@ -175,17 +309,17 @@ export default function Hero() {
             </span>
           </div>
 
-          <p style={styles.tagline}>
+          <p className="hero-tagline" style={styles.tagline}>
             I forge immersive game worlds and interactive experiences — crafting
             performance-driven gameplay mechanics, player-first design, and
             living, breathing digital realms.
           </p>
 
-          <div style={styles.statRow}>
+          <div className="hero-stat-row">
             {[
-              { label: "Engine", value: "Unreal 5" },
-              { label: "Language", value: "C++ / BP" },
-              { label: "Focus", value: "Game Dev" },
+              { label: "Engine",   value: "Unreal 5" },
+              { label: "Language", value: "C++ / BP"  },
+              { label: "Focus",    value: "Game Dev"  },
             ].map((s) => (
               <div key={s.label} style={styles.stat}>
                 <span style={styles.statValue}>{s.value}</span>
@@ -194,25 +328,21 @@ export default function Hero() {
             ))}
           </div>
 
-          <div style={styles.buttons}>
-            <a href="#projects" style={styles.btnPrimary}>
-              <span style={styles.btnIcon}>⚔</span> View Quests
+          <div className="hero-buttons">
+            <a href="#projects" className="hero-btn-primary">
+              <span>⚔</span> View Quests
             </a>
-            <a href="#contact" style={styles.btnOutline}>
-              <span style={styles.btnIcon}>✉</span> Send Scroll
+            <a href="#contact" className="hero-btn-outline">
+              <span>✉</span> Send Scroll
             </a>
-            <a
-              href="/Manjeet_Dhiman.pdf"
-              style={styles.btnOutline}
-              download
-            >
-              <span style={styles.btnIcon}>📜</span> Download Resume
+            <a href="/Manjeet_Dhiman.pdf" className="hero-btn-outline" download>
+              <span>📜</span> Download Resume
             </a>
           </div>
         </div>
 
-        {/* Right: Canvas rune circle */}
-        <div style={styles.canvasSide}>
+        {/* Right: Canvas rune circle + avatar */}
+        <div className="hero-canvas-side">
           <canvas ref={canvasRef} style={styles.canvas} />
           <div style={styles.avatarRing}>
             <div style={styles.avatarInner}>
@@ -228,36 +358,11 @@ export default function Hero() {
       </div>
 
       {/* Bottom decorative border */}
-      <div style={styles.topBorder}>
+      <div style={{ ...styles.topBorder, marginTop: "20px", marginBottom: 0 }}>
         <div style={styles.borderLine} />
         <div style={styles.borderDiamond}>⬧</div>
         <div style={styles.borderLine} />
       </div>
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Lato:wght@300;400&display=swap');
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
-          50% { transform: translateY(-20px) scale(1.3); opacity: 1; }
-        }
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-        @keyframes shimmer {
-          0% { background-position: -200% center; }
-          100% { background-position: 200% center; }
-        }
-        @keyframes pulse-ring {
-          0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.3), 0 0 60px rgba(212,175,55,0.1); }
-          50% { box-shadow: 0 0 40px rgba(212,175,55,0.6), 0 0 100px rgba(212,175,55,0.2); }
-        }
-        @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </section>
   );
 }
@@ -269,7 +374,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    padding: "60px 40px",
+    padding: "clamp(80px, 10vw, 100px) clamp(16px, 5vw, 40px) clamp(40px, 6vw, 60px)",
     position: "relative",
     overflow: "hidden",
     fontFamily: "'Cinzel', serif",
@@ -279,8 +384,7 @@ const styles = {
     inset: 0,
     backgroundImage: `
       radial-gradient(ellipse at 20% 50%, rgba(212,175,55,0.04) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 50%, rgba(120,60,200,0.06) 0%, transparent 60%),
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")
+      radial-gradient(ellipse at 80% 50%, rgba(120,60,200,0.06) 0%, transparent 60%)
     `,
     pointerEvents: "none",
     zIndex: 0,
@@ -301,7 +405,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "12px",
-    padding: "0 40px",
     position: "relative",
     zIndex: 2,
     marginBottom: "20px",
@@ -315,24 +418,6 @@ const styles = {
     color: "rgba(212,175,55,0.7)",
     fontSize: "18px",
   },
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "60px",
-    maxWidth: "1200px",
-    margin: "0 auto",
-    width: "100%",
-    position: "relative",
-    zIndex: 2,
-    animation: "fadeSlideUp 0.8s ease forwards",
-  },
-  textSide: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
   classLabel: {
     fontSize: "12px",
     letterSpacing: "4px",
@@ -340,12 +425,10 @@ const styles = {
     textTransform: "uppercase",
     margin: 0,
   },
-  classBracket: {
-    color: "rgba(212,175,55,0.9)",
-  },
+  classBracket: { color: "rgba(212,175,55,0.9)" },
   name: {
     fontFamily: "'Cinzel Decorative', cursive",
-    fontSize: "clamp(40px, 6vw, 78px)",
+    fontSize: "clamp(36px, 8vw, 78px)",
     lineHeight: 1.05,
     margin: 0,
     color: "#e8d5a3",
@@ -371,7 +454,7 @@ const styles = {
   },
   typewriter: {
     fontFamily: "'Cinzel', serif",
-    fontSize: "clamp(14px, 2vw, 20px)",
+    fontSize: "clamp(12px, 3vw, 20px)",
     color: "rgba(212,175,55,0.85)",
     letterSpacing: "3px",
     textTransform: "uppercase",
@@ -384,7 +467,7 @@ const styles = {
   tagline: {
     fontFamily: "'Lato', sans-serif",
     fontWeight: 300,
-    fontSize: "clamp(14px, 1.4vw, 17px)",
+    fontSize: "clamp(13px, 1.8vw, 17px)",
     color: "rgba(220,200,160,0.65)",
     lineHeight: 1.8,
     maxWidth: "520px",
@@ -392,15 +475,11 @@ const styles = {
     borderLeft: "2px solid rgba(212,175,55,0.3)",
     paddingLeft: "18px",
   },
-  statRow: {
-    display: "flex",
-    gap: "30px",
-  },
   stat: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "12px 20px",
+    padding: "10px 16px",
     border: "1px solid rgba(212,175,55,0.2)",
     background: "rgba(212,175,55,0.04)",
     borderRadius: "4px",
@@ -408,7 +487,7 @@ const styles = {
   },
   statValue: {
     fontFamily: "'Cinzel', serif",
-    fontSize: "14px",
+    fontSize: "clamp(11px, 2vw, 14px)",
     color: "#d4af37",
     letterSpacing: "1px",
   },
@@ -418,57 +497,6 @@ const styles = {
     color: "rgba(220,200,160,0.4)",
     textTransform: "uppercase",
   },
-  buttons: {
-    display: "flex",
-    gap: "14px",
-    flexWrap: "wrap",
-  },
-  btnPrimary: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "13px 28px",
-    background: "linear-gradient(135deg, #d4af37, #a87c2a)",
-    color: "#0a0705",
-    fontFamily: "'Cinzel', serif",
-    fontSize: "13px",
-    fontWeight: "600",
-    letterSpacing: "2px",
-    textDecoration: "none",
-    textTransform: "uppercase",
-    borderRadius: "3px",
-    boxShadow: "0 4px 20px rgba(212,175,55,0.3)",
-    transition: "all 0.3s ease",
-  },
-  btnOutline: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "12px 24px",
-    border: "1px solid rgba(212,175,55,0.5)",
-    color: "rgba(212,175,55,0.85)",
-    fontFamily: "'Cinzel', serif",
-    fontSize: "12px",
-    letterSpacing: "2px",
-    textDecoration: "none",
-    textTransform: "uppercase",
-    borderRadius: "3px",
-    background: "rgba(212,175,55,0.04)",
-    transition: "all 0.3s ease",
-  },
-  btnIcon: {
-    fontSize: "14px",
-  },
-  canvasSide: {
-    width: "380px",
-    height: "380px",
-    position: "relative",
-    flexShrink: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
   canvas: {
     position: "absolute",
     inset: 0,
@@ -476,8 +504,8 @@ const styles = {
     height: "100%",
   },
   avatarRing: {
-    width: "160px",
-    height: "160px",
+    width: "clamp(120px, 40%, 160px)",
+    height: "clamp(120px, 40%, 160px)",
     borderRadius: "50%",
     border: "2px solid rgba(212,175,55,0.4)",
     display: "flex",
@@ -489,8 +517,8 @@ const styles = {
     zIndex: 2,
   },
   avatarInner: {
-    width: "130px",
-    height: "130px",
+    width: "82%",
+    height: "82%",
     borderRadius: "50%",
     border: "1px solid rgba(212,175,55,0.3)",
     overflow: "hidden",
@@ -500,8 +528,8 @@ const styles = {
     background: "rgba(10,7,5,0.5)",
   },
   avatarPhoto: {
-    width: "130px",
-    height: "130px",
+    width: "100%",
+    height: "100%",
     borderRadius: "50%",
     objectFit: "cover",
     objectPosition: "center top",
@@ -510,7 +538,7 @@ const styles = {
   },
   levelBadge: {
     fontFamily: "'Cinzel', serif",
-    fontSize: "11px",
+    fontSize: "clamp(9px, 2vw, 11px)",
     letterSpacing: "3px",
     color: "rgba(212,175,55,0.6)",
     textTransform: "uppercase",

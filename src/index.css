@@ -6,20 +6,45 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 body {
   background: #0a0f1c;
   color: white;
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden; /* ✅ Prevents horizontal scroll on mobile */
+  width: 100%;
 }
 
 #root {
   margin: 0;
   padding: 0;
+  width: 100%;
+  overflow-x: hidden;
 }
-
 
 section {
-  scroll-margin-top: 100px;
+  scroll-margin-top: 80px; /* slightly reduced for mobile */
+  width: 100%;
 }
+
+/* ✅ Global responsive image fix */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ✅ Global responsive utility */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ✅ Responsive breakpoints for reference (used across components):
+   Mobile:  max-width: 480px
+   Tablet:  max-width: 768px
+   Laptop:  max-width: 1024px */

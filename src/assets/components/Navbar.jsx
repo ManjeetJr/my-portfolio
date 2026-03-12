@@ -10,16 +10,29 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled]   = useState(false);
-  const [active,   setActive]     = useState("#hero");
-  const [menuOpen, setMenuOpen]   = useState(false);
-  const [hovered,  setHovered]    = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [active,   setActive]   = useState("#hero");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [hovered,  setHovered]  = useState(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close menu on resize to desktop
+  useEffect(() => {
+    const onResize = () => { if (window.innerWidth > 768) setMenuOpen(false); };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // Prevent body scroll when mobile menu open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
 
   return (
     <>
@@ -32,15 +45,19 @@ export default function Navbar() {
         }
         @keyframes fadeDown {
           from { opacity: 0; transform: translateY(-12px); }
-          to   { opacity: 1; transform: translateY(0);     }
+          to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes runeGlow {
           0%,100% { text-shadow: 0 0 8px rgba(212,175,55,0.4); }
           50%      { text-shadow: 0 0 20px rgba(212,175,55,0.9), 0 0 40px rgba(212,175,55,0.3); }
         }
         @keyframes slideIn {
-          from { opacity: 0; transform: translateX(30px); }
-          to   { opacity: 1; transform: translateX(0);    }
+          from { opacity: 0; transform: translateX(-20px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes overlayFade {
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
 
         .nav-link-item {
@@ -59,6 +76,7 @@ export default function Navbar() {
           border-radius: 3px;
           transition: all 0.25s ease;
           cursor: pointer;
+          white-space: nowrap;
         }
         .nav-link-item:hover,
         .nav-link-item.active {
@@ -79,43 +97,110 @@ export default function Navbar() {
           transition: width 0.3s ease;
         }
         .nav-link-item:hover::after,
-        .nav-link-item.active::after {
-          width: 60%;
+        .nav-link-item.active::after { width: 60%; }
+
+        .hamburger-btn {
+          display: none;
+          flex-direction: column;
+          gap: 5px;
+          background: none;
+          border: 1px solid rgba(212,175,55,0.2);
+          border-radius: 4px;
+          cursor: pointer;
+          padding: 8px;
+          z-index: 1002;
+          transition: border-color 0.3s ease;
         }
+        .hamburger-btn:hover { border-color: rgba(212,175,55,0.5); }
 
         .hamburger-line {
-          width: 24px;
+          width: 22px;
           height: 2px;
           background: rgba(212,175,55,0.8);
           border-radius: 2px;
           transition: all 0.3s ease;
+          display: block;
         }
+
+        .mobile-overlay {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.6);
+          z-index: 998;
+          animation: overlayFade 0.25s ease forwards;
+        }
+
+        .mobile-drawer {
+          display: none;
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: min(80vw, 300px);
+          z-index: 999;
+          background: rgba(8,5,3,0.98);
+          border-left: 1px solid rgba(212,175,55,0.2);
+          backdrop-filter: blur(16px);
+          flex-direction: column;
+          padding-top: 80px;
+          animation: slideDrawer 0.3s ease forwards;
+          overflow-y: auto;
+        }
+
+        @keyframes slideDrawer {
+          from { transform: translateX(100%); opacity: 0; }
+          to   { transform: translateX(0);    opacity: 1; }
+        }
+
         .mobile-menu-link {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 14px 24px;
+          gap: 14px;
+          padding: 16px 28px;
           font-family: 'Cinzel', serif;
           font-size: 13px;
           letter-spacing: 2px;
           text-transform: uppercase;
           text-decoration: none;
           color: rgba(220,200,160,0.75);
-          border-bottom: 1px solid rgba(212,175,55,0.1);
+          border-bottom: 1px solid rgba(212,175,55,0.08);
           transition: all 0.2s ease;
           animation: slideIn 0.3s ease forwards;
+          opacity: 0;
+          animation-fill-mode: forwards;
         }
-        .mobile-menu-link:hover {
+        .mobile-menu-link:hover,
+        .mobile-menu-link.active {
           color: #d4af37;
           background: rgba(212,175,55,0.06);
-          padding-left: 32px;
+          padding-left: 36px;
+        }
+
+        .desktop-ornament { display: block; }
+        .desktop-links    { display: flex; }
+
+        /* ── TABLET ── */
+        @media (max-width: 1024px) {
+          .desktop-ornament { display: none !important; }
+          .nav-link-item { padding: 8px 10px; font-size: 11px; letter-spacing: 1px; }
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+          .desktop-links    { display: none !important; }
+          .desktop-ornament { display: none !important; }
+          .hamburger-btn    { display: flex !important; }
+          .mobile-overlay   { display: block; }
+          .mobile-drawer    { display: flex; }
         }
       `}</style>
 
+      {/* NAV BAR */}
       <nav style={{ ...styles.nav, ...(scrolled ? styles.navScrolled : {}) }}>
 
-        {/* Left ornament */}
-        <div style={styles.ornament}>⬧</div>
+        {/* Left ornament — hidden on tablet/mobile via CSS */}
+        <div className="desktop-ornament" style={styles.ornament}>⬧</div>
 
         {/* Logo */}
         <a href="#hero" style={styles.logoWrap}>
@@ -125,7 +210,7 @@ export default function Navbar() {
         </a>
 
         {/* Desktop links */}
-        <div style={styles.links}>
+        <div className="desktop-links" style={styles.links}>
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
@@ -144,43 +229,58 @@ export default function Navbar() {
         </div>
 
         {/* Right ornament */}
-        <div style={styles.ornament}>⬧</div>
+        <div className="desktop-ornament" style={styles.ornament}>⬧</div>
 
-        {/* Hamburger (mobile) */}
+        {/* Hamburger button */}
         <button
-          style={styles.hamburger}
+          className="hamburger-btn"
           onClick={() => setMenuOpen((o) => !o)}
           aria-label="Toggle menu"
         >
-          <div className="hamburger-line"
-            style={menuOpen ? { transform: "rotate(45deg) translate(4px,4px)" } : {}} />
-          <div className="hamburger-line"
-            style={menuOpen ? { opacity: 0 } : {}} />
-          <div className="hamburger-line"
-            style={menuOpen ? { transform: "rotate(-45deg) translate(4px,-4px)" } : {}} />
+          <span className="hamburger-line"
+            style={menuOpen ? { transform: "rotate(45deg) translate(5px, 5px)" } : {}} />
+          <span className="hamburger-line"
+            style={menuOpen ? { opacity: 0, transform: "scaleX(0)" } : {}} />
+          <span className="hamburger-line"
+            style={menuOpen ? { transform: "rotate(-45deg) translate(5px, -5px)" } : {}} />
         </button>
       </nav>
 
-      {/* Mobile dropdown */}
+      {/* Mobile overlay — only renders when open */}
       {menuOpen && (
-        <div style={styles.mobileMenu}>
-          <div style={styles.mobileDivider}>
-            <div style={styles.mobileDividerLine} />
-            <span style={styles.mobileDividerGlyph}>⬧ MENU ⬧</span>
-            <div style={styles.mobileDividerLine} />
+        <div
+          className="mobile-overlay"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile side drawer */}
+      {menuOpen && (
+        <div className="mobile-drawer">
+          {/* Drawer header */}
+          <div style={styles.drawerHeader}>
+            <div style={styles.drawerLine} />
+            <span style={styles.drawerLabel}>⬧ MENU ⬧</span>
+            <div style={styles.drawerLine} />
           </div>
+
           {NAV_LINKS.map((link, i) => (
             <a
               key={link.href}
               href={link.href}
-              className="mobile-menu-link"
-              style={{ animationDelay: `${i * 0.05}s` }}
+              className={`mobile-menu-link${active === link.href ? " active" : ""}`}
+              style={{ animationDelay: `${i * 0.06}s` }}
               onClick={() => { setActive(link.href); setMenuOpen(false); }}
             >
-              <span>{link.glyph}</span>
+              <span style={{ fontSize: "18px" }}>{link.glyph}</span>
               {link.label}
             </a>
           ))}
+
+          {/* Drawer footer ornament */}
+          <div style={styles.drawerFooter}>
+            <span style={{ color: "rgba(212,175,55,0.25)", fontSize: "22px" }}>⚔</span>
+          </div>
         </div>
       )}
     </>
@@ -215,7 +315,6 @@ const styles = {
     color: "rgba(212,175,55,0.3)",
     fontSize: "16px",
     userSelect: "none",
-    display: "block",
   },
   logoWrap: {
     display: "flex",
@@ -231,7 +330,7 @@ const styles = {
   },
   logoText: {
     fontFamily: "'Cinzel Decorative', cursive",
-    fontSize: "20px",
+    fontSize: "clamp(15px, 4vw, 20px)",
     fontWeight: 700,
     background: "linear-gradient(135deg, #d4af37, #f5e17a, #a87c2a, #d4af37)",
     backgroundSize: "300% auto",
@@ -242,51 +341,38 @@ const styles = {
   },
   logoDim: {
     fontFamily: "'Cinzel', serif",
-    fontSize: "13px",
+    fontSize: "clamp(11px, 2vw, 13px)",
     color: "rgba(212,175,55,0.35)",
     letterSpacing: "1px",
   },
   links: {
-    display: "flex",
     alignItems: "center",
     gap: "4px",
   },
-  hamburger: {
-    display: "none",
-    flexDirection: "column",
-    gap: "5px",
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    padding: "6px",
-    zIndex: 1001,
-  },
-  mobileMenu: {
-    position: "fixed",
-    top: "64px",
-    left: 0,
-    right: 0,
-    zIndex: 999,
-    background: "rgba(10,7,5,0.97)",
-    borderBottom: "1px solid rgba(212,175,55,0.2)",
-    backdropFilter: "blur(12px)",
-    animation: "fadeDown 0.25s ease forwards",
-  },
-  mobileDivider: {
+  drawerHeader: {
     display: "flex",
     alignItems: "center",
     gap: "12px",
-    padding: "12px 24px",
+    padding: "0 24px 16px",
+    marginBottom: "8px",
+    borderBottom: "1px solid rgba(212,175,55,0.15)",
   },
-  mobileDividerLine: {
+  drawerLine: {
     flex: 1,
     height: "1px",
     background: "rgba(212,175,55,0.2)",
   },
-  mobileDividerGlyph: {
+  drawerLabel: {
     fontFamily: "'Cinzel', serif",
     fontSize: "10px",
     letterSpacing: "3px",
     color: "rgba(212,175,55,0.5)",
+    whiteSpace: "nowrap",
+  },
+  drawerFooter: {
+    marginTop: "auto",
+    padding: "32px",
+    display: "flex",
+    justifyContent: "center",
   },
 };

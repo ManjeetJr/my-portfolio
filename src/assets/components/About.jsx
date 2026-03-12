@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import manjeetPhoto from "../images/manjeet.png";
 
 const STATS = [
-  { label: "Class",     value: "Game Developer",   icon: "⚔️" },
-  { label: "Engine",    value: "Unreal Engine 5",  icon: "🔮" },
-  { label: "Language",  value: "C++ & Blueprint",  icon: "📜" },
-  // { label: "Guild",     value: "hackHive CTF",     icon: "🛡️" },
-  { label: "Board",     value: "MSBTE Diploma",    icon: "🏛️" },
-  { label: "Quest",     value: "Final Year",       icon: "🗺️" },
+  { label: "Class",    value: "Game Developer",  icon: "⚔️" },
+  { label: "Engine",   value: "Unreal Engine 5", icon: "🔮" },
+  { label: "Language", value: "C++ & Blueprint", icon: "📜" },
+  { label: "Board",    value: "MSBTE Diploma",   icon: "🏛️" },
+  { label: "Quest",    value: "Final Year",      icon: "🗺️" },
 ];
 
 const LORE = [
@@ -42,11 +41,14 @@ const LORE = [
   },
 ];
 
-function useInView(threshold = 0.15) {
+function useInView(threshold = 0.1) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setInView(true); },
+      { threshold }
+    );
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
@@ -55,7 +57,7 @@ function useInView(threshold = 0.15) {
 
 export default function About() {
   const [sectionRef, inView] = useInView();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab]   = useState(0);
 
   return (
     <section id="about" style={styles.section} ref={sectionRef}>
@@ -87,13 +89,13 @@ export default function About() {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 10px 18px;
+          padding: 10px 14px;
           background: none;
           border: 1px solid rgba(212,175,55,0.15);
           border-radius: 3px;
           font-family: 'Cinzel', serif;
-          font-size: 11px;
-          letter-spacing: 2px;
+          font-size: 10px;
+          letter-spacing: 1.5px;
           text-transform: uppercase;
           color: rgba(220,200,160,0.5);
           cursor: pointer;
@@ -117,7 +119,7 @@ export default function About() {
           flex-direction: column;
           align-items: center;
           gap: 6px;
-          padding: 16px 12px;
+          padding: 14px 10px;
           border: 1px solid rgba(212,175,55,0.15);
           border-radius: 4px;
           background: rgba(212,175,55,0.03);
@@ -128,6 +130,54 @@ export default function About() {
           border-color: rgba(212,175,55,0.45);
           background: rgba(212,175,55,0.07);
           transform: translateY(-3px);
+        }
+
+        /* ── ABOUT GRID ── */
+        .about-grid {
+          display: grid;
+          grid-template-columns: 1fr 1.4fr;
+          gap: 40px;
+          align-items: start;
+        }
+
+        /* ── TAB ROW ── */
+        .about-tab-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        /* ── TABLET ── */
+        @media (max-width: 1024px) {
+          .about-grid {
+            grid-template-columns: 1fr 1.2fr;
+            gap: 28px;
+          }
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+          .about-grid {
+            grid-template-columns: 1fr;
+            gap: 28px;
+          }
+          .about-tab-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+          }
+          .lore-tab-btn {
+            justify-content: center;
+            text-align: center;
+            white-space: normal;
+          }
+        }
+
+        /* ── SMALL MOBILE ── */
+        @media (max-width: 480px) {
+          .about-tab-row {
+            grid-template-columns: 1fr;
+          }
+          .lore-tab-btn { padding: 12px 10px; }
         }
       `}</style>
 
@@ -156,7 +206,7 @@ export default function About() {
         </div>
 
         {/* ── Main grid ── */}
-        <div style={styles.grid}>
+        <div className="about-grid">
 
           {/* LEFT — Character card */}
           <div style={{
@@ -214,7 +264,7 @@ export default function About() {
           }}>
 
             {/* Tab buttons */}
-            <div style={styles.tabRow}>
+            <div className="about-tab-row">
               {LORE.map((l, i) => (
                 <button
                   key={i}
@@ -234,7 +284,6 @@ export default function About() {
                 <h3 style={styles.tabHeading}>{LORE[activeTab].heading}</h3>
                 <p style={styles.tabText}>{LORE[activeTab].text}</p>
               </div>
-              {/* Corner rune decorations */}
               <span style={styles.cornerTL}>⌐</span>
               <span style={styles.cornerBR}>¬</span>
             </div>
@@ -255,14 +304,14 @@ export default function About() {
   );
 }
 
-const GOLD   = "#d4af37";
-const GOLDF  = "rgba(212,175,55,";
+const GOLD  = "#d4af37";
+const GOLDF = "rgba(212,175,55,";
 
 const styles = {
   section: {
     minHeight: "100vh",
     background: "linear-gradient(160deg, #0a0705 0%, #0f0c10 60%, #0a0705 100%)",
-    padding: "100px 40px",
+    padding: "clamp(60px, 10vw, 100px) clamp(16px, 5vw, 40px)",
     position: "relative",
     overflow: "hidden",
     fontFamily: "'Cinzel', serif",
@@ -280,15 +329,15 @@ const styles = {
   },
   inner: { maxWidth: "1200px", margin: "0 auto" },
 
-  /* Header */
-  header: { textAlign: "center", marginBottom: "60px", transition: "all 0.6s ease" },
-  hidden: { opacity: 0, transform: "translateY(20px)" },
+  header: { textAlign: "center", marginBottom: "clamp(30px,5vw,60px)", transition: "all 0.6s ease" },
+  hidden:  { opacity: 0, transform: "translateY(20px)" },
   visible: { opacity: 1, transform: "translateY(0)" },
-  divider: { display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", margin: "12px 0" },
-  dividerLine: { width: "80px", height: "1px", background: `linear-gradient(90deg, transparent, ${GOLDF}0.4), transparent)` },
+
+  divider:      { display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", margin: "12px 0" },
+  dividerLine:  { width: "80px", height: "1px", background: `linear-gradient(90deg, transparent, ${GOLDF}0.4), transparent)` },
   dividerGlyph: { color: GOLDF + "0.6)", fontSize: "14px" },
   sectionLabel: { fontFamily: "'Cinzel', serif", fontSize: "11px", letterSpacing: "5px", color: GOLDF + "0.5)", margin: "0 0 12px" },
-  sectionTitle: { fontFamily: "'Cinzel Decorative', cursive", fontSize: "clamp(28px,4vw,48px)", color: "#e8d5a3", margin: 0, letterSpacing: "2px" },
+  sectionTitle: { fontFamily: "'Cinzel Decorative', cursive", fontSize: "clamp(24px, 4vw, 48px)", color: "#e8d5a3", margin: 0, letterSpacing: "2px" },
   titleAccent: {
     background: `linear-gradient(135deg, ${GOLD}, #f5e17a, #a87c2a, ${GOLD})`,
     backgroundSize: "300% auto",
@@ -297,21 +346,18 @@ const styles = {
     animation: "shimmer 4s linear infinite",
   },
 
-  /* Grid */
-  grid: { display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "40px", alignItems: "start" },
-
-  /* Character card */
   characterCard: {
     background: "rgba(15,10,8,0.8)",
     border: "1px solid rgba(212,175,55,0.2)",
     borderRadius: "6px",
-    padding: "30px",
+    padding: "clamp(20px, 4vw, 30px)",
     display: "flex",
     flexDirection: "column",
     gap: "24px",
     position: "relative",
   },
-  avatarWrap: { display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" },
+
+  avatarWrap:  { display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" },
   avatarOuter: {
     width: "110px", height: "110px", borderRadius: "50%",
     border: `2px solid ${GOLDF}0.35)`,
@@ -333,11 +379,11 @@ const styles = {
     filter: "sepia(0.15) contrast(1.05)",
     display: "block",
   },
-  nameTag: { textAlign: "center" },
-  nameTagName: { fontFamily: "'Cinzel Decorative', cursive", fontSize: "16px", color: "#e8d5a3", margin: "0 0 4px", letterSpacing: "1px" },
-  nameTagRole: { fontFamily: "'Lato', sans-serif", fontSize: "12px", color: GOLDF + "0.5)", margin: 0, letterSpacing: "2px" },
+  nameTag:     { textAlign: "center" },
+  nameTagName: { fontFamily: "'Cinzel Decorative', cursive", fontSize: "clamp(13px,3vw,16px)", color: "#e8d5a3", margin: "0 0 4px", letterSpacing: "1px" },
+  nameTagRole: { fontFamily: "'Lato', sans-serif", fontSize: "11px", color: GOLDF + "0.5)", margin: 0, letterSpacing: "2px" },
 
-  cardDivider: { display: "flex", alignItems: "center", gap: "10px" },
+  cardDivider:     { display: "flex", alignItems: "center", gap: "10px" },
   cardDividerLine: { flex: 1, height: "1px", background: GOLDF + "0.15)" },
   cardDividerText: { fontSize: "9px", letterSpacing: "3px", color: GOLDF + "0.4)", whiteSpace: "nowrap" },
 
@@ -345,42 +391,41 @@ const styles = {
   statValue: { fontFamily: "'Cinzel', serif", fontSize: "11px", color: GOLD, textAlign: "center", letterSpacing: "1px" },
   statLabel: { fontSize: "9px", letterSpacing: "2px", color: GOLDF + "0.4)", textTransform: "uppercase" },
 
-  xpWrap: { display: "flex", flexDirection: "column", gap: "8px" },
+  xpWrap:   { display: "flex", flexDirection: "column", gap: "8px" },
   xpHeader: { display: "flex", justifyContent: "space-between" },
-  xpLabel: { fontSize: "10px", letterSpacing: "2px", color: GOLDF + "0.5)", textTransform: "uppercase" },
-  xpPct: { fontSize: "10px", color: GOLD },
-  xpBg: { height: "6px", background: GOLDF + "0.1)", borderRadius: "3px", overflow: "hidden", border: `1px solid ${GOLDF}0.15)` },
-  xpFill: { height: "100%", width: "74%", background: `linear-gradient(90deg, #a87c2a, ${GOLD})`, borderRadius: "3px", boxShadow: `0 0 10px ${GOLDF}0.4)` },
-  xpNote: { fontFamily: "'Lato', sans-serif", fontSize: "10px", color: GOLDF + "0.35)", margin: 0, textAlign: "center" },
+  xpLabel:  { fontSize: "10px", letterSpacing: "2px", color: GOLDF + "0.5)", textTransform: "uppercase" },
+  xpPct:    { fontSize: "10px", color: GOLD },
+  xpBg:     { height: "6px", background: GOLDF + "0.1)", borderRadius: "3px", overflow: "hidden", border: `1px solid ${GOLDF}0.15)` },
+  xpFill:   { height: "100%", width: "74%", background: `linear-gradient(90deg, #a87c2a, ${GOLD})`, borderRadius: "3px", boxShadow: `0 0 10px ${GOLDF}0.4)` },
+  xpNote:   { fontFamily: "'Lato', sans-serif", fontSize: "10px", color: GOLDF + "0.35)", margin: 0, textAlign: "center" },
 
-  /* Lore panel */
   lorePanel: { display: "flex", flexDirection: "column", gap: "20px" },
-  tabRow: { display: "flex", flexWrap: "wrap", gap: "8px" },
+
   tabContent: {
     background: "rgba(15,10,8,0.8)",
     border: `1px solid ${GOLDF}0.2)`,
     borderRadius: "6px",
-    padding: "30px",
+    padding: "clamp(18px, 4vw, 30px)",
     position: "relative",
-    minHeight: "200px",
+    minHeight: "180px",
     animation: "fadeSlideUp 0.35s ease forwards",
   },
   tabContentInner: { display: "flex", flexDirection: "column", gap: "12px" },
-  tabBigIcon: { fontSize: "32px" },
-  tabHeading: { fontFamily: "'Cinzel Decorative', cursive", fontSize: "18px", color: "#e8d5a3", margin: 0, letterSpacing: "1px" },
-  tabText: { fontFamily: "'Lato', sans-serif", fontWeight: 300, fontSize: "15px", color: "rgba(220,200,160,0.7)", lineHeight: 1.85, margin: 0 },
-  cornerTL: { position: "absolute", top: "10px", left: "12px", color: GOLDF + "0.25)", fontSize: "20px", fontFamily: "monospace" },
-  cornerBR: { position: "absolute", bottom: "10px", right: "12px", color: GOLDF + "0.25)", fontSize: "20px", fontFamily: "monospace" },
+  tabBigIcon:  { fontSize: "clamp(24px, 5vw, 32px)" },
+  tabHeading:  { fontFamily: "'Cinzel Decorative', cursive", fontSize: "clamp(14px, 3vw, 18px)", color: "#e8d5a3", margin: 0, letterSpacing: "1px" },
+  tabText:     { fontFamily: "'Lato', sans-serif", fontWeight: 300, fontSize: "clamp(13px, 1.8vw, 15px)", color: "rgba(220,200,160,0.7)", lineHeight: 1.85, margin: 0 },
+  cornerTL:    { position: "absolute", top: "10px", left: "12px", color: GOLDF + "0.25)", fontSize: "20px", fontFamily: "monospace" },
+  cornerBR:    { position: "absolute", bottom: "10px", right: "12px", color: GOLDF + "0.25)", fontSize: "20px", fontFamily: "monospace" },
 
   quoteScroll: {
     display: "flex",
     gap: "10px",
-    padding: "20px 24px",
+    padding: "clamp(14px, 3vw, 20px) clamp(14px, 3vw, 24px)",
     border: `1px solid ${GOLDF}0.15)`,
     borderLeft: `3px solid ${GOLDF}0.5)`,
     borderRadius: "4px",
     background: GOLDF + "0.03)",
   },
-  quoteGlyph: { fontFamily: "'Cinzel Decorative', cursive", fontSize: "28px", color: GOLDF + "0.4)", lineHeight: 1, alignSelf: "flex-start" },
-  quoteText: { fontFamily: "'Lato', sans-serif", fontStyle: "italic", fontWeight: 300, fontSize: "14px", color: "rgba(220,200,160,0.6)", margin: 0, lineHeight: 1.7 },
+  quoteGlyph: { fontFamily: "'Cinzel Decorative', cursive", fontSize: "clamp(20px,4vw,28px)", color: GOLDF + "0.4)", lineHeight: 1, alignSelf: "flex-start" },
+  quoteText:  { fontFamily: "'Lato', sans-serif", fontStyle: "italic", fontWeight: 300, fontSize: "clamp(12px,1.8vw,14px)", color: "rgba(220,200,160,0.6)", margin: 0, lineHeight: 1.7 },
 };
